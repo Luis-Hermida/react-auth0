@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 require("dotenv").config();
 const jwt = require("express-jwt"); // Validate JWT and set req.user
 const jwksRsa = require("jwks-rsa"); // Retrieve RSA keys from a JSON Web Key set (JWKS) endpoint
@@ -27,7 +28,7 @@ const app = express();
 
 function checkRole(role) {
   return function(req, res, next) {
-    const assignedRoles = req.user["http://localhost:3000/roles"];
+    const assignedRoles = req.user["https://auth0-lahn.herokuapp.com/roles"];
     if (Array.isArray(assignedRoles) && assignedRoles.includes(role)) {
       return next();
     } else {
@@ -35,6 +36,8 @@ function checkRole(role) {
     }
   };
 }
+
+app.use(express.static(path.join(__dirname, "client/build")));
 
 app.get("/public", function(req, res) {
   res.json({
@@ -63,5 +66,11 @@ app.get("/course", checkJwt, checkScope(["read:courses"]), function(req, res) {
   });
 });
 
-app.listen(3001);
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+});
+
+const port = process.env.PORT || 5001;
+app.listen(port);
+
 console.log("API SERVER listening on " + process.env.REACT_APP_API_URL);
