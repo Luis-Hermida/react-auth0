@@ -37,7 +37,7 @@ function checkRole(role) {
   };
 }
 
-app.use(express.static(path.join(__dirname, "client/build")));
+app.use(express.static(path.join(__dirname, "view/build")));
 
 app.get("/public", function(req, res) {
   res.json({
@@ -67,7 +67,7 @@ app.get("/course", checkJwt, checkScope(["read:courses"]), function(req, res) {
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/client/build/index.html"));
+  res.sendFile(path.join(__dirname + "/view/build/index.html"));
 });
 
 const port = process.env.PORT || 5001;
