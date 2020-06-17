@@ -12,7 +12,7 @@ const checkJwt = jwt({
     cache: true, // cache signing key
     rateLimit: true,
     jwksRequestsPerMinute: 5, // prevent attackers from requesting more than 5 per minute
-    jwksUri: `https://${process.env.REACT_APP_AUTH0_DOMAIN}/.well-known/jwks.json`
+    jwksUri: `https://${process.env.REACT_APP_AUTH0_DOMAIN}/.well-known/jwks.json`,
   }),
 
   // Validate the audience and the issuer.
@@ -21,14 +21,15 @@ const checkJwt = jwt({
 
   // This must match the algorithm selected in the Auth0 dashboard
   // under your app's advanced settings under the 0Auth tab
-  algorithms: ["RS256"]
+  algorithms: ["RS256"],
 });
 
 const app = express();
 
 function checkRole(role) {
-  return function(req, res, next) {
-    const assignedRoles = req.user["https://auth0-lahn.herokuapp.com/roles"];
+  return function (req, res, next) {
+    const assignedRoles =
+      req.user["https://react-auth0-lahn.herokuapp.com/roles"];
     if (Array.isArray(assignedRoles) && assignedRoles.includes(role)) {
       return next();
     } else {
@@ -39,30 +40,30 @@ function checkRole(role) {
 
 app.use(express.static(path.join(__dirname, "view/build")));
 
-app.get("/public", function(req, res) {
+app.get("/public", function (req, res) {
   res.json({
-    message: "Hello from a public API!"
+    message: "Hello from a public API!",
   });
 });
 
-app.get("/private", checkJwt, function(req, res) {
+app.get("/private", checkJwt, function (req, res) {
   res.json({
-    message: "Hello from a private API!"
+    message: "Hello from a private API!",
   });
 });
 
-app.get("/admin", checkJwt, checkRole("admin"), function(req, res) {
+app.get("/admin", checkJwt, checkRole("admin"), function (req, res) {
   res.json({
-    message: "Hello admin!"
+    message: "Hello admin!",
   });
 });
 
-app.get("/course", checkJwt, checkScope(["read:courses"]), function(req, res) {
+app.get("/course", checkJwt, checkScope(["read:courses"]), function (req, res) {
   res.json({
     courses: [
       { id: 1, title: "Building Apps with React Redux" },
-      { id: 2, title: "Creating Reusable React Components" }
-    ]
+      { id: 2, title: "Creating Reusable React Components" },
+    ],
   });
 });
 
